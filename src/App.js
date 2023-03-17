@@ -1,29 +1,25 @@
 function App() {
-  return <Header />;
-}
-
-function Header() {
-  const tituloApp = "Hoje Aprendi!";
-
   return (
     <>
-      <header className="header">
-        <div className="logo">
-          <img
-            src="./logo.jpeg"
-            height="68"
-            width="68"
-            alt="Logo Hoje Aprendi"
-          />
-          <h1>{tituloApp}</h1>
-        </div>
-        <button className="btn">Compartilhe uma curiosidade</button>
-      </header>
+      <Header />
       <main className="main">
         <ListaCategorias />
         <ListaCuriosidades />
       </main>
     </>
+  );
+}
+
+function Header() {
+  const tituloApp = "Hoje Aprendi!";
+  return (
+    <header className="header">
+      <div className="logo">
+        <img src="./logo.jpeg" height="68" width="68" alt="Logo Hoje Aprendi" />
+        <h1>{tituloApp}</h1>
+      </div>
+      <button className="btn">Compartilhe uma curiosidade</button>
+    </header>
   );
 }
 
@@ -41,7 +37,7 @@ const curiosidadesIniciais = [
     texto:
       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
     fonte: "http://exemplo.com.br",
-    categoria: "tecnologia",
+    categoria: "notícias",
     criadoEm: 2023,
   },
   {
@@ -49,7 +45,7 @@ const curiosidadesIniciais = [
     texto:
       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
     fonte: "http://exemplo.com.br",
-    categoria: "tecnologia",
+    categoria: "história",
     criadoEm: 2023,
   },
   {
@@ -57,7 +53,7 @@ const curiosidadesIniciais = [
     texto:
       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
     fonte: "http://exemplo.com.br",
-    categoria: "tecnologia",
+    categoria: "finanças",
     criadoEm: 2023,
   },
   {
@@ -65,7 +61,7 @@ const curiosidadesIniciais = [
     texto:
       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
     fonte: "http://exemplo.com.br",
-    categoria: "tecnologia",
+    categoria: "sociedade",
     criadoEm: 2023,
   },
 ];
@@ -86,8 +82,11 @@ function ListaCategorias() {
     <aside>
       <ul>
         {CATEGORIAS.map((cat) => (
-          <li className="categoria">
-            <button className="btn">{cat.nome}</button>
+          <li key={cat.nome} className="categoria">
+            <button className="btn btn-categoria"
+            style={{backgroundColor: cat.cor}}>
+              {cat.nome}
+            </button>
           </li>
         ))}
       </ul>
@@ -100,13 +99,25 @@ function ListaCuriosidades() {
     <section>
       <ul className="lista-curiosidade">
         {curiosidadesIniciais.map((curiosidade) => (
-          <li className="curiosidade">
+          <li key={curiosidade.id} className="curiosidade">
             <p>
               {curiosidade.texto}
-              <a className="fonte" href={curiosidade.fonte} target="_blank">
+              <a
+                className="fonte"
+                href={curiosidade.fonte}
+                target="_blank"
+                rel="noreferrer"
+              >
                 (Fonte)
               </a>
             </p>
+            <span
+              className="tag-categoria"
+              style={{
+                backgroundColor: CATEGORIAS.find((cat) => cat.nome === curiosidade.categoria).cor,
+              }} 
+            >{curiosidade.categoria}
+            </span>
           </li>
         ))}
       </ul>

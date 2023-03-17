@@ -29,6 +29,25 @@ ul {
   list-style: none;
 }
 
+.fonte:visited, .fonte:link{
+  color: #a8a29e;
+  text-decoration: none;
+  margin-left: 12px;
+}
+
+.curiosidade{
+  font-size: 20px;
+  line-height: 1.4;
+  background-color: #44403c;
+  margin-bottom: 16px;
+  padding: 16px 24px;
+  letter-spacing: -1px;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
 
 .btn{
   border: none;
