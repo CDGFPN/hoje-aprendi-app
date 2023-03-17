@@ -11,12 +11,24 @@ body{
   padding: 48px 64px 0px;
 }
 
+.main {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 48px;
+  height: calc(100vh - 48px - 68px - 40px);
+}
+
 .header {
   margin-bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
+ul {
+  list-style: none;
+}
+
 
 .btn{
   border: none;
@@ -29,4 +41,13 @@ body{
   color: inherit;
   border-radius: 100px;
   cursor: pointer;
+}
+
+.btn-categoria {
+  width: 100%;
+  background-image: none;
+}
+
+.categoria {
+  margin-bottom: 16px;
 }
