@@ -62,11 +62,93 @@ ul {
   cursor: pointer;
 }
 
+.btn:hover{
+  transform: scale(110%) rotate(-2deg);
+}
+
 .btn-categoria {
   width: 100%;
   background-image: none;
 }
 
+.btn-grande{
+  font-size: 20px;
+  padding: 20px 32px 17px;
+}
+
+.curiosidade-form{
+  background-color: #44403c;
+  margin-bottom: 40px;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 16px;
+}
+
+.curiosidade-form input,
+.curiosidade-form select{
+  width: 220px;
+  background-color: #78716c;
+  border: none;
+  border-radius: 100px;
+  padding: 16px;
+  font-size: 18px;
+  color: inherit;
+  font-family: inherit;
+}
+
+.curiosidade-form input::placeholder{
+  color: #a8a29e;
+}
+
+.curiosidade-form input:first-child{
+  flex-grow: 1;
+}
+
+.curiosidade-form span{
+  font-weight: 600;
+  font-size: 18px;
+  margin-right: 18px;
+}
+
+.btn-todas-categorias{
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.tag-categoria{
+  text-transform: uppercase;
+  font-size: 14px;
+  font-family: 'Coiny', sans-serif;
+  padding: .5rem .5rem;
+  border-radius: 100px;
+}
+
 .categoria {
   margin-bottom: 16px;
+}
+
+.botao-voto{
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.botao-voto button{
+  border: none;
+  background-color: #78716c;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  color: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.botao-voto button:hover{
+  background-color: #292524;
 }
