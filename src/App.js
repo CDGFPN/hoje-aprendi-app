@@ -74,24 +74,27 @@ function App() {
   const [curiosidade, setCuriosidade] = useState([]);
   const [estaCarregando, setEstaCarregando] = useState(false);
 
-  useEffect(function () {
-    async function getCuriosidade() {
-      setEstaCarregando(true);
-      let query = supabase.from("curiosidade").select("*")
+  useEffect(
+    function () {
+      async function getCuriosidade() {
+        setEstaCarregando(true);
+        let query = supabase.from("curiosidade").select("*");
 
-      if(categoriaAtual !== "todos")
-      query = query.eq("categoria", categoriaAtual)
+        if (categoriaAtual !== "todos")
+          query = query.eq("categoria", categoriaAtual);
 
-      const { data: curiosidade, error } = await query
-        .order("votoCurti", {ascending: false})
-        .limit(1000)
+        const { data: curiosidade, error } = await query
+          .order("votoCurti", { ascending: false })
+          .limit(1000);
 
-      if(!error) setCuriosidade(curiosidade)
-      else alert("Houve um problema ao recuperar os dados")
-      setEstaCarregando(false)
-    }
-    getCuriosidade();
-  }, [categoriaAtual]);
+        if (!error) setCuriosidade(curiosidade);
+        else alert("Houve um problema ao recuperar os dados");
+        setEstaCarregando(false);
+      }
+      getCuriosidade();
+    },
+    [categoriaAtual]
+  );
 
   return (
     <>
@@ -223,41 +226,63 @@ function ListaCategorias({ setCategoriaAtual }) {
 }
 
 function ListaCuriosidades({ curiosidade }) {
+  if (curiosidade.length === 0) {
+    return (
+      <div>
+        <p className="mensagem">
+          Não existe nenhuma curiosidade nessa categoria :/
+        </p>
+        <p className="mensagem">Adicione a primeira! 😁</p>
+      </div>
+    );
+  }
   return (
     <section>
       <ul className="lista-curiosidade">
         {curiosidade.map((curiosidade) => (
-          <li key={curiosidade.id} className="curiosidade">
-            <p>
-              {curiosidade.texto}
-              <a
-                className="fonte"
-                href={curiosidade.fonte}
-                target="_blank"
-                rel="noreferrer"
-              >
-                (Fonte)
-              </a>
-            </p>
-            <span
-              className="tag-categoria"
-              style={{
-                backgroundColor: CATEGORIAS.find(
-                  (cat) => cat.nome === curiosidade.categoria
-                ).cor,
-              }}
-            >
-              {curiosidade.categoria}
-            </span>
-            <div className="botao-voto">
-              <button>❤️{curiosidade.votoCurti}</button>
-              <button>🤯{curiosidade.votoMeImpressionei}</button>
-              <button>⛔️{curiosidade.votoFalso}</button>
-            </div>
-          </li>
+          <Curiosidades key={curiosidade.id} curiosidade={curiosidade} />
         ))}
       </ul>
+
+      <p>
+        {curiosidade.length !== 1
+          ? `Existem ${curiosidade.length} curiosidades nesta categoria!`
+          : `Existe ${curiosidade.length} curiosidade nesta categoria!`}
+      </p>
     </section>
+  );
+}
+
+function Curiosidades({ curiosidade }) {
+  return (
+    <li key={curiosidade.id} className="curiosidade">
+      <p>
+        {curiosidade.texto}
+        <a
+          className="fonte"
+          href={curiosidade.fonte}
+          target="_blank"
+          rel="noreferrer"
+        >
+          (Fonte)
+        </a>
+      </p>
+      <span
+        className="tag-categoria"
+        style={{
+          backgroundColor: CATEGORIAS.find(
+            (cat) => cat.nome === curiosidade.categoria
+          ).cor,
+        }}
+      >
+        {curiosidade.categoria}
+      </span>
+      <div className="botao-voto">
+        <button>❤️{curiosidade.votoCurti}</button>
+        <button>🤯{curiosidade.votoMeImpressionei}</button>
+        <button>⛔️{curiosidade.votoFalso}</button>
+      </div>
+    </li>
   );
 }
 
