@@ -1,62 +1,63 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import supabase from "./supabase";
 
-const curiosidadesIniciais = [
-  {
-    id: 1,
-    texto:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
-    fonte: "http://exemplo.com.br",
-    categoria: "tecnologia",
-    votoCurti: 0,
-    votoMeImpressionei: 0,
-    votoFalso: 0,
-    criadoEm: 2023,
-  },
-  {
-    id: 2,
-    texto:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
-    fonte: "http://exemplo.com.br",
-    categoria: "notícias",
-    votoCurti: 0,
-    votoMeImpressionei: 0,
-    votoFalso: 0,
-    criadoEm: 2023,
-  },
-  {
-    id: 3,
-    texto:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
-    fonte: "http://exemplo.com.br",
-    categoria: "história",
-    votoCurti: 0,
-    votoMeImpressionei: 0,
-    votoFalso: 0,
-    criadoEm: 2023,
-  },
-  {
-    id: 4,
-    texto:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
-    fonte: "http://exemplo.com.br",
-    categoria: "finanças",
-    votoCurti: 0,
-    votoMeImpressionei: 0,
-    votoFalso: 0,
-    criadoEm: 2023,
-  },
-  {
-    id: 5,
-    texto:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
-    fonte: "http://exemplo.com.br",
-    categoria: "sociedade",
-    votoCurti: 0,
-    votoMeImpressionei: 0,
-    votoFalso: 0,
-    criadoEm: 2023,
-  },
-];
+// const curiosidadesIniciais = [
+//   {
+//     id: 1,
+//     texto:
+//       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
+//     fonte: "http://exemplo.com.br",
+//     categoria: "tecnologia",
+//     votoCurti: 0,
+//     votoMeImpressionei: 0,
+//     votoFalso: 0,
+//     criadoEm: 2023,
+//   },
+//   {
+//     id: 2,
+//     texto:
+//       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
+//     fonte: "http://exemplo.com.br",
+//     categoria: "notícias",
+//     votoCurti: 0,
+//     votoMeImpressionei: 0,
+//     votoFalso: 0,
+//     criadoEm: 2023,
+//   },
+//   {
+//     id: 3,
+//     texto:
+//       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
+//     fonte: "http://exemplo.com.br",
+//     categoria: "história",
+//     votoCurti: 0,
+//     votoMeImpressionei: 0,
+//     votoFalso: 0,
+//     criadoEm: 2023,
+//   },
+//   {
+//     id: 4,
+//     texto:
+//       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
+//     fonte: "http://exemplo.com.br",
+//     categoria: "finanças",
+//     votoCurti: 0,
+//     votoMeImpressionei: 0,
+//     votoFalso: 0,
+//     criadoEm: 2023,
+//   },
+//   {
+//     id: 5,
+//     texto:
+//       "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi sint eaque laudantium.",
+//     fonte: "http://exemplo.com.br",
+//     categoria: "sociedade",
+//     votoCurti: 0,
+//     votoMeImpressionei: 0,
+//     votoFalso: 0,
+//     criadoEm: 2023,
+//   },
+// ];
 
 const CATEGORIAS = [
   { nome: "tecnologia", cor: "#3b82f6" },
@@ -70,7 +71,27 @@ const CATEGORIAS = [
 ];
 function App() {
   const [categoriaAtual, setCategoriaAtual] = useState("todos");
-  const [curiosidade, setCuriosidade] = useState(curiosidadesIniciais);
+  const [curiosidade, setCuriosidade] = useState([]);
+  const [estaCarregando, setEstaCarregando] = useState(false);
+
+  useEffect(function () {
+    async function getCuriosidade() {
+      setEstaCarregando(true);
+      let query = supabase.from("curiosidade").select("*")
+
+      if(categoriaAtual !== "todos")
+      query = query.eq("categoria", categoriaAtual)
+
+      const { data: curiosidade, error } = await query
+        .order("votoCurti", {ascending: false})
+        .limit(1000)
+
+      if(!error) setCuriosidade(curiosidade)
+      else alert("Houve um problema ao recuperar os dados")
+      setEstaCarregando(false)
+    }
+    getCuriosidade();
+  }, [categoriaAtual]);
 
   return (
     <>
@@ -78,10 +99,18 @@ function App() {
       <NovoFormCuriosidade setCuriosidade={setCuriosidade} />
       <main className="main">
         <ListaCategorias setCategoriaAtual={setCategoriaAtual} />
-        <ListaCuriosidades curiosidade={curiosidade} />
+        {estaCarregando ? (
+          <Carregando />
+        ) : (
+          <ListaCuriosidades curiosidade={curiosidade} />
+        )}
       </main>
     </>
   );
+}
+
+function Carregando() {
+  return <p className="mensagem">Carregando...</p>;
 }
 
 function Header() {
