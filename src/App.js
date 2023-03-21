@@ -73,6 +73,7 @@ function App() {
   const [categoriaAtual, setCategoriaAtual] = useState("todos");
   const [curiosidade, setCuriosidade] = useState([]);
   const [estaCarregando, setEstaCarregando] = useState(false);
+  const [mostrarForm, setMostrarForm] = useState(false);
 
   useEffect(
     function () {
@@ -98,8 +99,11 @@ function App() {
 
   return (
     <>
-      <Header />
-      <NovoFormCuriosidade setCuriosidade={setCuriosidade} />
+      <Header mostrarForm={mostrarForm} setMostrarForm={setMostrarForm} />
+      {mostrarForm ? (
+        <NovoFormCuriosidade setCuriosidade={setCuriosidade} setMostrarForm={setMostrarForm}/>
+      ) : null}
+
       <main className="main">
         <ListaCategorias setCategoriaAtual={setCategoriaAtual} />
         {estaCarregando ? (
@@ -116,7 +120,7 @@ function Carregando() {
   return <p className="mensagem">Carregando...</p>;
 }
 
-function Header() {
+function Header({ mostrarForm, setMostrarForm }) {
   const tituloApp = "Hoje Aprendi!";
   return (
     <header className="header">
@@ -124,7 +128,12 @@ function Header() {
         <img src="./logo.jpeg" height="68" width="68" alt="Logo Hoje Aprendi" />
         <h1>{tituloApp}</h1>
       </div>
-      <button className="btn btn-grande">Compartilhe uma curiosidade</button>
+      <button
+        className="btn btn-grande"
+        onClick={() => setMostrarForm((form) => !form)}
+      >
+        {!mostrarForm ? "Compartilhe uma curiosidade" : "Fechar"}
+      </button>
     </header>
   );
 }
@@ -140,7 +149,7 @@ function isValidHttpUrl(string) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-function NovoFormCuriosidade({ setCuriosidade }) {
+function NovoFormCuriosidade({ setCuriosidade, setMostrarForm }) {
   const [texto, setTexto] = useState("");
   const [fonte, setFonte] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -152,18 +161,23 @@ function NovoFormCuriosidade({ setCuriosidade }) {
 
     //verifica se todos os campos do fomulário são válidos para adicionar ao UI, ainda sem uso de banco de dados
     if (texto && isValidHttpUrl(fonte) && categoria && tamanhoTexto <= 200) {
-      
       //upload da nova curiosidade do banco de dados
       const { data: novaCuriosidade, error } = await supabase
         .from("curiosidade")
-        .insert([{texto, fonte, categoria }])
-        .select()
+        .insert([{ texto, fonte, categoria }])
+        .select();
 
-      //atualiza a UI com a nova curiosidade e persiste  
-      if(!error) setCuriosidade((curiosidade) => [novaCuriosidade[0], ...curiosidade]);
+      //atualiza a UI com a nova curiosidade e persiste
+      if (!error)
+        setCuriosidade((curiosidade) => [novaCuriosidade[0], ...curiosidade]);
+
+      //apaga todos os campos
       setTexto("");
       setFonte("");
       setCategoria("");
+
+      //fecha o formulário
+      setMostrarForm(false);
     }
   }
   return (
