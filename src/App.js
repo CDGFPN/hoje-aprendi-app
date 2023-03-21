@@ -146,23 +146,21 @@ function NovoFormCuriosidade({ setCuriosidade }) {
   const [categoria, setCategoria] = useState("");
   const tamanhoTexto = texto.length;
   console.log(texto);
-  function controleForm(e) {
+  async function controleForm(e) {
     //previne recarregamento
     e.preventDefault();
 
     //verifica se todos os campos do fomulário são válidos para adicionar ao UI, ainda sem uso de banco de dados
     if (texto && isValidHttpUrl(fonte) && categoria && tamanhoTexto <= 200) {
-      const novaCuriosidade = {
-        id: Math.round(Math.random() * 100000),
-        texto,
-        fonte,
-        categoria,
-        votoCurti: 0,
-        votoMeImpressionei: 0,
-        votoFalso: 0,
-        criadoEm: new Date().getFullYear(),
-      };
-      setCuriosidade((curiosidade) => [novaCuriosidade, ...curiosidade]);
+      
+      //upload da nova curiosidade do banco de dados
+      const { data: novaCuriosidade, error } = await supabase
+        .from("curiosidade")
+        .insert([{texto, fonte, categoria }])
+        .select()
+
+      //atualiza a UI com a nova curiosidade e persiste  
+      if(!error) setCuriosidade((curiosidade) => [novaCuriosidade[0], ...curiosidade]);
       setTexto("");
       setFonte("");
       setCategoria("");
