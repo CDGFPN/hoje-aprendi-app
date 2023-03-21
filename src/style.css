@@ -84,6 +84,14 @@ ul {
   margin-top: 24px;
 }
 
+.informacaoContestada{
+  color: #ef4444;
+  font-weight: 600;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  display: block
+}
+
 .curiosidade-form{
   background-color: #44403c;
   margin-bottom: 40px;

@@ -69,11 +69,12 @@ const CATEGORIAS = [
   { nome: "história", cor: "#f97316" },
   { nome: "notícias", cor: "#8b5cf6" },
 ];
+
 function App() {
-  const [categoriaAtual, setCategoriaAtual] = useState("todos");
+  const [mostrarForm, setMostrarForm] = useState(false);
   const [curiosidade, setCuriosidade] = useState([]);
   const [estaCarregando, setEstaCarregando] = useState(false);
-  const [mostrarForm, setMostrarForm] = useState(false);
+  const [categoriaAtual, setCategoriaAtual] = useState("todos");
 
   useEffect(
     function () {
@@ -101,7 +102,10 @@ function App() {
     <>
       <Header mostrarForm={mostrarForm} setMostrarForm={setMostrarForm} />
       {mostrarForm ? (
-        <NovoFormCuriosidade setCuriosidade={setCuriosidade} setMostrarForm={setMostrarForm}/>
+        <NovoFormCuriosidade
+          setCuriosidade={setCuriosidade}
+          setMostrarForm={setMostrarForm}
+        />
       ) : null}
 
       <main className="main">
@@ -109,7 +113,10 @@ function App() {
         {estaCarregando ? (
           <Carregando />
         ) : (
-          <ListaCuriosidades curiosidade={curiosidade} />
+          <ListaCuriosidades
+            curiosidade={curiosidade}
+            setCuriosidade={setCuriosidade}
+          />
         )}
       </main>
     </>
@@ -154,7 +161,7 @@ function NovoFormCuriosidade({ setCuriosidade, setMostrarForm }) {
   const [fonte, setFonte] = useState("");
   const [categoria, setCategoria] = useState("");
   const tamanhoTexto = texto.length;
-  console.log(texto);
+
   async function controleForm(e) {
     //previne recarregamento
     e.preventDefault();
@@ -199,7 +206,7 @@ function NovoFormCuriosidade({ setCuriosidade, setMostrarForm }) {
         <option value="">Escolha a categoria:</option>
         {CATEGORIAS.map((cat) => (
           <option key={cat.nome} value={cat.nome}>
-            {cat.nome.toLocaleUpperCase()}
+            {cat.nome.toUpperCase()}
           </option>
         ))}
       </select>
@@ -237,7 +244,7 @@ function ListaCategorias({ setCategoriaAtual }) {
   );
 }
 
-function ListaCuriosidades({ curiosidade }) {
+function ListaCuriosidades({ curiosidade, setCuriosidade }) {
   if (curiosidade.length === 0) {
     return (
       <div>
@@ -252,7 +259,11 @@ function ListaCuriosidades({ curiosidade }) {
     <section>
       <ul className="lista-curiosidade">
         {curiosidade.map((curiosidade) => (
-          <Curiosidades key={curiosidade.id} curiosidade={curiosidade} />
+          <Curiosidades
+            key={curiosidade.id}
+            curiosidade={curiosidade}
+            setCuriosidade={setCuriosidade}
+          />
         ))}
       </ul>
 
@@ -265,10 +276,28 @@ function ListaCuriosidades({ curiosidade }) {
   );
 }
 
-function Curiosidades({ curiosidade }) {
+function Curiosidades({ curiosidade, setCuriosidade }) {
+  const informacaoContestada = 
+    curiosidade.votoFalso > curiosidade.votoCurti + curiosidade.votoMeImpressionei
+
+
+  async function controleReacoes(nomeColuna) {
+    const { data: atualizaVoto, error } = await supabase
+      .from("curiosidade")
+      .update({ [nomeColuna]: curiosidade[nomeColuna]++ })
+      .eq("id", curiosidade.id)
+      .select();
+
+    console.log(atualizaVoto[0]);
+    if (!error)
+      setCuriosidade((curiosidade) =>
+        curiosidade.map((c) => (c.id === curiosidade.id ? atualizaVoto[0] : c))
+      );
+  }
   return (
     <li key={curiosidade.id} className="curiosidade">
       <p>
+        {informacaoContestada ? <span className="informacaoContestada">[⚠️ INFORMAÇÃO POTENCIALMENTE FALSA]</span> : null}
         {curiosidade.texto}
         <a
           className="fonte"
@@ -290,9 +319,15 @@ function Curiosidades({ curiosidade }) {
         {curiosidade.categoria}
       </span>
       <div className="botao-voto">
-        <button>❤️{curiosidade.votoCurti}</button>
-        <button>🤯{curiosidade.votoMeImpressionei}</button>
-        <button>⛔️{curiosidade.votoFalso}</button>
+        <button onClick={() => controleReacoes("votoCurti")}>
+          ❤️{curiosidade.votoCurti}
+        </button>
+        <button onClick={() => controleReacoes("votoMeImpressionei")}>
+          🤯{curiosidade.votoMeImpressionei}
+        </button>
+        <button onClick={() => controleReacoes("votoFalso")}>
+          ⛔️{curiosidade.votoFalso}
+        </button>
       </div>
     </li>
   );
